@@ -1,0 +1,117 @@
+---
+description: Project structure and where to create new files as the app grows
+alwaysApply: true
+---
+
+## Overall structure
+
+This project is a **Vite + React + TypeScript** single-page app that talks to **Supabase** for auth, data, image generation, credits, and billing.
+
+- `index.html`: minimal HTML shell containing the `root` div where React mounts.
+- `src/main.tsx`: React entry point that mounts `<App />` into `#root`.
+- `src/App.tsx`: top-level app composition:
+  - Sets up React Router for `/`, `/login`, `/signup`, `/success`, etc.
+  - Wraps the app in `AuthProvider` and uses `AuthGuard` to protect authenticated routes.
+- `supabase/`: backend pieces for this project:
+  - `supabase/functions/*`: Supabase Edge Functions (serverless API endpoints).
+  - `supabase/migrations/*`: SQL migrations that define and evolve the database schema.
+
+When growing the codebase, follow the patterns already established in `src` and `supabase` instead of creating new top-level folders.
+
+## Frontend code layout (`src`)
+
+Use these conventions for where new code should live:
+
+- `src/pages/` — **top-level route screens**
+  - Each file here is typically mapped to a URL in `App.tsx`.
+  - Pages should focus on **screen layout and wiring** (what data they need, which components they render).
+  - Keep heavy logic in hooks or services where possible.
+  - **Add new pages** here when:
+    - You add a new route (e.g. `/settings`, `/billing`, `/profile`).
+    - You need a distinct full-screen view in the app.
+
+- `src/components/` — **reusable UI building blocks**
+  - `components/auth/` — auth-focused components like forms, guards, and small auth UIs.
+  - `components/stripe/` — pricing, subscription, and Stripe-related UI pieces.
+  - Other shared UI elements should be grouped by feature or role, for example:
+    - `components/layout/` for headers, sidebars, layout shells.
+    - `components/common/` for low-level atoms like buttons, inputs, badges.
+  - **Add new components** here when:
+    - A UI piece is used in more than one page, or likely will be.
+    - A page file is getting visually noisy and you want to extract a clear sub-component.
+
+- `src/contexts/` — **React context providers**
+  - Use for cross-cutting state that many parts of the app care about (e.g. auth, theme, global settings).
+  - `AuthContext.tsx` is the pattern to follow:
+    - Define a context type.
+    - Provide a custom hook like `useAuth()` for consumption.
+    - Wrap in a provider component used at the top of the tree (`App.tsx`).
+  - **Add new contexts** here when:
+    - Multiple distant components need access to the same shared state.
+    - Passing props down many levels becomes awkward.
+
+- `src/lib/` — **service layer and shared utilities**
+  - `supabase.ts`: creates and exports the Supabase client using `VITE_SUPABASE_*` env vars.
+  - `authService.ts`: auth-related calls and helpers.
+  - `imageService.ts`: calls to the `generate-image` function and image-generation-related helpers.
+  - `creditsService.ts`: calls to `get-credits` and credit accounting.
+  - `stripe.ts` / `stripe-config.ts`: client-side Stripe helpers/config.
+  - `types.ts`: shared TypeScript types/models (including Supabase `Database` types).
+  - **Add new service files** here when:
+    - You introduce a new Supabase function or table and need client helpers (e.g. `notificationsService.ts`, `profilesService.ts`).
+    - You add a non-UI utility that will be reused (date formatting, domain-specific helpers, etc.).
+  - **Rule of thumb:** Components should prefer calling small, well-named functions from `lib/*` instead of directly talking to Supabase everywhere.
+
+- `src/index.css` and Tailwind
+  - Base CSS and Tailwind directives live here.
+  - Prefer Tailwind utility classes in JSX for most styling.
+  - If a component requires a lot of custom CSS, consider:
+    - Extracting a small component-specific class and documenting it.
+    - Or breaking the component up so utility classes remain manageable.
+
+## Backend code layout (`supabase`)
+
+- `supabase/functions/<name>/index.ts`
+  - Each folder under `functions` is a Supabase Edge Function.
+  - Follow the existing structure in `generate-image`, `get-credits`, `stripe-checkout`, and `stripe-webhook`:
+    - Parse and validate input.
+    - Authenticate / authorize using Supabase auth.
+    - Perform domain logic (call external APIs, read/write DB).
+    - Return a clear JSON payload with well-defined fields.
+  - **Add a new function** folder when:
+    - You need a backend operation that should not run in the browser (e.g. calling secrets-protected APIs, heavy processing).
+    - You introduce a new feature that is naturally “API-like” (e.g. batch operations, admin actions).
+
+- `supabase/migrations/*.sql`
+  - Each file describes a step in the database evolution.
+  - Keep migrations **append-only**: create new migrations instead of editing old ones.
+  - Prefer clear, descriptive migration names that reflect the feature or table being changed.
+
+## Where to put new things as we grow
+
+Use these guidelines to keep the structure clean as the project evolves:
+
+- **New page/screen**
+  - Add a file in `src/pages/` (e.g. `SettingsPage.tsx`).
+  - Wire it to a route in `App.tsx`.
+  - Extract complex UI sections into `src/components/feature-name/` as needed.
+
+- **New reusable UI element**
+  - Start in `src/components/feature-name/ComponentName.tsx` if it’s feature-specific.
+  - Use `src/components/common/` for generic, app-wide primitives (buttons, inputs, modals).
+
+- **New cross-cutting state**
+  - Create a context in `src/contexts/` with a `useXxx()` hook.
+  - Wrap it at the appropriate level (often in `App.tsx`).
+
+- **New backend capability**
+  - Add a Supabase Edge Function in `supabase/functions/<feature>/index.ts`.
+  - Add a matching client helper in `src/lib/<feature>Service.ts`.
+  - Update `src/lib/types.ts` if new tables or RPC types are needed.
+
+- **New domain logic / helpers**
+  - Place shared logic in `src/lib/` rather than inside components.
+  - Keep helpers small and focused; prefer many small functions over one huge utility.
+
+Keeping to this structure will make it easier to navigate the project, onboard new contributors, and extend features without the codebase becoming tangled over time.
+

@@ -1,0 +1,96 @@
+---
+description: React + TypeScript + Supabase best practices for this project
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+## Component and file patterns
+
+- **Use functional components** (`function ComponentName() { ... }`) instead of class components.
+- **One component per file** and keep files focused:
+  - Pages in `src/pages/` are responsible for high-level layout and wiring.
+  - Presentational / reusable pieces live in `src/components/`.
+- **Name files to match components/services**:
+  - `MainApp.tsx` exports `MainApp`.
+  - `authService.ts` exports auth-related helpers.
+- **Prefer composition over props drilling**:
+  - Share cross-cutting state via contexts in `src/contexts/` (e.g. `AuthContext`).
+  - Use wrappers like `AuthGuard` for route protection and auth gating.
+
+## State and hooks
+
+- **Use React hooks** for component state:
+  - `useState` for local UI state (form fields, loading flags, errors).
+  - `useEffect` for side effects (loading initial data, reacting to prop/state changes).
+- Keep hooks **high-level in the component body**, avoid defining them inside loops or conditions.
+- If multiple components share non-trivial logic (e.g. polling, debounced search, complex forms):
+  - Extract a **custom hook** in `src/hooks/` (create this folder if/when needed).
+  - Name hooks `useXxx` and keep them focused on one responsibility.
+
+## Data access and Supabase usage
+
+- **Centralize Supabase calls** in `src/lib/*Service.ts` or similar:
+  - Components should generally call helpers like `generateImage`, `getFluxCredits`, `signOut` rather than using `supabase` directly.
+  - This keeps data access logic in one place, easier to test and change.
+- Use the shared `supabase` client from `src/lib/supabase.ts`:
+  - Never recreate clients ad-hoc in random files.
+  - Rely on `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from `.env`.
+- When adding a new Supabase Edge Function:
+  - Create the function under `supabase/functions/<name>/index.ts`.
+  - Add a matching client wrapper in `src/lib/<name>Service.ts`.
+  - Ensure the helper handles:
+    - Input validation and typing.
+    - Error translation into user-friendly messages.
+
+## Error handling and user feedback
+
+- **Always handle errors** from async calls:
+  - Wrap `await` calls in `try/catch`.
+  - Log details to `console.error` for debugging.
+  - Surface a clear, user-friendly message to the UI (e.g. via `error` state).
+- Use **loading flags** for async flows:
+  - e.g. `isGenerating`, `loadingCredits`.
+  - Disable buttons and inputs while loading to avoid duplicate requests.
+- For user feedback:
+  - Show inline messages near the relevant UI (e.g. error banner above a form).
+  - Use concise, non-technical language for end users.
+
+## Auth patterns
+
+- Use `AuthContext` as the **single source of truth** for auth state:
+  - Access the current user via `useAuth()` instead of passing user objects through many props.
+  - Put login/logout helpers in `authService.ts` and keep React components mostly focused on the UI.
+- Use `AuthGuard` to protect routes:
+  - Wrap protected pages in `AuthGuard` at the routing level (`App.tsx`).
+  - Keep redirect and “not authenticated” handling inside `AuthGuard` rather than repeating logic in each page.
+
+## Styling and UI
+
+- Prefer **Tailwind CSS utility classes** over ad-hoc inline styles:
+  - Keep className strings readable by grouping related utilities (layout, spacing, typography, colors).
+- Use **semantic HTML elements** (`button`, `a`, `form`, `label`, `section`, `main`) to help with accessibility.
+- For iconography, continue using `lucide-react` as in existing components:
+  - Keep icon usage consistent (size, color, placement) for a cohesive UI.
+
+## Types and models
+
+- Keep shared types and database-related models in `src/lib/types.ts`:
+  - Reuse these types instead of redefining shapes in multiple places.
+  - When adding new tables or function payloads, update or extend types here.
+- Prefer **explicit types** for public interfaces:
+  - Props, context values, and service function signatures should be typed.
+- Let TypeScript infer internal details where possible, but be explicit at boundaries (e.g. function parameters and return types).
+
+## Extending the system safely
+
+- When adding new features:
+  - Start at the **page level** (what route / screen is needed?).
+  - Design **service helpers** in `src/lib/` that encapsulate data access.
+  - Build or reuse **components** in `src/components/` for UI.
+  - Only then wire everything together in the page.
+- Avoid mixing concerns:
+  - Don’t put raw SQL, low-level Supabase logic, and complex UI all in a single component.
+  - Keep each layer (UI, state, data access) reasonably separated.
+
+Following these practices will keep the React + Supabase stack predictable, testable, and easier to extend as new image-generation and billing features are added.
+
