@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">AI Image Studio</title>
+  <desc id="logo-desc">Layered frames mark — image and composition in one</desc>
+  <defs>
+    <linearGradient id="logo-fg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  <!-- Mark: same layered frames, optically centered -->
+  <g transform="translate(106 72)">
+    <rect x="0" y="32" width="160" height="160" rx="28" fill="#1e293b" />
+    <rect x="48" y="0" width="160" height="160" rx="28" fill="url(#logo-fg)" />
+  </g>
+  <!-- Wordmark: generous spacing, confident weight -->
+  <text
+    x="256"
+    y="380"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    font-size="28"
+    font-weight="600"
+    letter-spacing="0.02em"
+    fill="#0f172a"
+  >
+    AI Image Studio
+  </text>
+</svg>

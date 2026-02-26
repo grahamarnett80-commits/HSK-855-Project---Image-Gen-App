@@ -87,6 +87,16 @@ export async function resetPassword(email: string): Promise<{ error: string | nu
   }
 }
 
+export async function updateEmail(newEmail: string): Promise<{ error: string | null }> {
+  try {
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) return { error: error.message };
+    return { error: null };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Failed to update email' };
+  }
+}
+
 export async function updatePassword(newPassword: string): Promise<{ error: string | null }> {
   try {
     const { error } = await supabase.auth.updateUser({

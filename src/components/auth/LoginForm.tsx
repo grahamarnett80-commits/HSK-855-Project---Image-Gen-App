@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -38,11 +38,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-center mb-6">
-        <LogIn className="w-8 h-8 text-blue-600 mr-2" />
-        <h2 className="text-2xl font-bold text-gray-900">Sign In</h2>
-      </div>
+    <div className="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
 
       {message && (
         <div className={`mb-4 p-3 rounded-md ${

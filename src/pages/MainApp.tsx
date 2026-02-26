@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Loader2, Download, Clock, LogOut, Image as ImageIcon, Zap } from 'lucide-react';
+import { Loader2, Download, Clock, Image as ImageIcon, Zap } from 'lucide-react';
+import { UserMenu } from '../components/UserMenu';
 import { generateImage, getRecentGenerations } from '../lib/imageService';
-import { signOut } from '../lib/authService';
 import { useAuth } from '../contexts/AuthContext';
 import { getFluxCredits } from '../lib/creditsService';
 import type { GenerateImageParams, ImageGeneration, ImageSize } from '../lib/types';
@@ -95,28 +95,23 @@ export function MainApp({ onLogout }: MainAppProps) {
     }
   };
 
-  const handleLogout = async () => {
-    const { error } = await signOut();
-    if (!error) {
-      onLogout?.();
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between mb-12">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="w-10 h-10 text-blue-600" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                AI Image Studio
-              </h1>
+            <div className="flex items-center gap-3">
+              <img src="/favicon.svg" alt="" className="w-10 h-10 shrink-0" aria-hidden />
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
+                  AI Image Studio
+                </h1>
+                <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">Transform your ideas into stunning visuals</p>
+              </div>
             </div>
-            <p className="text-slate-600">Transform your ideas into stunning visuals</p>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200 px-6 py-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="bg-gradient-to-br from-amber-400 to-orange-400 p-2 rounded-lg">
@@ -134,23 +129,12 @@ export function MainApp({ onLogout }: MainAppProps) {
                 </div>
               </div>
             </div>
-
-            <div className="text-right">
-              <p className="text-sm text-slate-500">Logged in as</p>
-              <p className="font-semibold text-slate-800 break-all">{user?.email}</p>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-semibold"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
+            <UserMenu />
           </div>
         </header>
 
         <div className="max-w-4xl mx-auto mb-16">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-8">
             <form onSubmit={handleGenerate} className="space-y-6">
               <div>
                 <label htmlFor="prompt" className="block text-sm font-semibold text-slate-700 mb-3">
@@ -205,7 +189,7 @@ export function MainApp({ onLogout }: MainAppProps) {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
+                    <img src="/favicon.svg" alt="" className="w-5 h-5 opacity-90" aria-hidden />
                     Generate Image
                   </>
                 )}
@@ -228,7 +212,7 @@ export function MainApp({ onLogout }: MainAppProps) {
               <div className="relative rounded-xl overflow-hidden bg-slate-100">
                 <img
                   src={generatedImage.url}
-                  alt="Generated"
+                  alt={prompt ? `AI generated image for: ${prompt}` : 'AI generated image'}
                   className="w-full h-auto"
                 />
               </div>

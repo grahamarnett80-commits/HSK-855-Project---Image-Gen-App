@@ -1,13 +1,58 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('darkMode');
+          if (stored === 'true' || (stored === null && window.matchMedia('(prefers-color-scheme: dark)').matches))
+            document.documentElement.classList.add('dark');
+          else if (stored === 'false') document.documentElement.classList.remove('dark');
+        } catch (e) {}
+      })();
+    </script>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flux-2-Pro Image Generation Site</title>
-    <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+    <title>AI Image Studio – Generate Stunning Images from Text</title>
+
+    <meta
+      name="description"
+      content="AI Image Studio lets you turn text prompts into stunning AI-generated images, with credit tracking and subscriptions powered by Supabase and Stripe."
+    />
+    <meta name="robots" content="index,follow" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="application-name" content="AI Image Studio" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AI Image Studio" />
+    <meta property="og:title" content="AI Image Studio – Generate Stunning Images from Text" />
+    <meta
+      property="og:description"
+      content="Generate high-quality AI images from simple text prompts, track your credits, and manage subscriptions."
+    />
+    <meta property="og:url" content="https://ai-image-studio.example.com" />
+    <meta property="og:image" content="https://ai-image-studio.example.com/social-card.svg" />
+
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+    <meta name="twitter:title" content="AI Image Studio – Generate Stunning Images from Text" />
+    <meta
+      name="twitter:description"
+      content="Generate high-quality AI images from simple text prompts, track your credits, and manage subscriptions."
+    />
+    <meta name="twitter:image" content="https://ai-image-studio.example.com/social-card.svg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "AI Image Studio",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "Web",
+        "description": "Generate AI-powered images from text, with credit tracking and subscriptions.",
+        "url": "https://ai-image-studio.example.com"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -41,9 +41,21 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md">
-          {showSignup ? (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+            <div className="flex flex-col items-center gap-4 mb-2">
+              <img src="/logo.svg" alt="AI Image Studio logo" className="w-16 h-16" />
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                AI Image Studio
+              </h1>
+            </div>
+<p className="text-slate-600 dark:text-slate-400">
+            Generate stunning AI images from simple text prompts using your Flux credits.
+          </p>
+        </div>
+
+        {showSignup ? (
             <>
               <SignupForm onSuccess={() => setShowSignup(false)} />
               <div className="mt-4 text-center">
@@ -68,6 +80,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
               </div>
             </>
           )}
+
+<p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6">
+          Your account is protected with industry-standard encryption
+        </p>
         </div>
       </div>
     );
